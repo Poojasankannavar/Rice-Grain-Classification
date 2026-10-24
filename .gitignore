@@ -1,1 +1,7 @@
 Rice_Image_Dataset
+__pycache__/
+*.py[cod]
+.venv/
+.venv-*/
+static/uploads/*
+!static/uploads/.gitkeep

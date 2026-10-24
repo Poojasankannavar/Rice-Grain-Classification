@@ -1,116 +1,230 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-
-<title>Rice Grain Classification</title>
-
-<style>
-
-body{
-
-margin:0;
-padding:0;
-font-family:Arial;
-background:#f2f5f9;
-
-}
-
-.container{
-
-width:450px;
-margin:40px auto;
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0px 0px 15px rgba(0,0,0,.2);
-text-align:center;
-
-}
-
-h1{
-
-color:#1e88e5;
-
-}
-
-input[type=file]{
-
-margin:20px;
-
-}
-
-button{
-
-background:#1e88e5;
-color:white;
-border:none;
-padding:12px 25px;
-cursor:pointer;
-font-size:16px;
-border-radius:5px;
-
-}
-
-button:hover{
-
-background:#1565c0;
-
-}
-
-img{
-
-margin-top:20px;
-width:150px;
-border-radius:10px;
-border:2px solid #ddd;
-
-}
-
-.result{
-
-margin-top:25px;
-font-size:20px;
-
-}
-
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Rice Grain Classification</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f2f6f8;
+      background: #080f1b;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --mint: #50e0c3;
+      --muted: #92a4b8;
+      --line: #233247;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 28px 16px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(ellipse at 50% 0%, #142238 0, #080f1b 58%);
+    }
+    .card {
+      position: relative;
+      width: min(100%, 560px);
+      padding: clamp(24px, 6vw, 38px);
+      border: 1px solid #263750;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #111c2e, #0d1727 72%);
+      box-shadow: 0 24px 70px #0007;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 14px;
+      color: var(--mint);
+      font: 700 .7rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); content: ""; box-shadow: 0 0 12px #50e0c388; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.1rem); letter-spacing: -.035em; line-height: 1.2; }
+    .intro { max-width: 440px; margin: 12px 0 25px; color: var(--muted); font-size: .98rem; line-height: 1.65; }
+    form { display: grid; gap: 14px; }
+    .dropzone {
+      position: relative;
+      min-height: 156px;
+      padding: 25px 18px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #38516d;
+      border-radius: 12px;
+      background: #0a1423;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease;
+    }
+    .dropzone:hover, .dropzone.dragover { border-color: var(--mint); background: #0c1d2a; }
+    .dropzone:focus-within { outline: 2px solid var(--mint); outline-offset: 3px; }
+    .upload-icon { width: 34px; height: 34px; margin-bottom: 11px; color: var(--mint); }
+    .drop-title { display: block; font-weight: 650; }
+    .drop-hint { display: block; margin-top: 7px; color: #8194a9; font: .72rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .04em; }
+    input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    .file-name { display: block; max-width: 100%; margin-top: 9px; overflow: hidden; color: var(--mint); font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+    button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--mint);
+      color: #071720;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease;
+    }
+    button { font-family: inherit; font-size: .98rem; font-weight: 700; }
+    button:hover { filter: brightness(1.07); transform: translateY(-1px); }
+    button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+    button:disabled { cursor: wait; filter: saturate(.65); transform: none; }
+    .error { margin: 16px 0 0; padding: 12px 14px; border: 1px solid #773d4b; border-radius: 9px; background: #2a1723; color: #ffb5bc; line-height: 1.5; }
+    .preview {
+      width: 100%;
+      height: 258px;
+      margin-top: 20px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid #263750;
+      border-radius: 11px;
+      background: #050a12;
+    }
+    .preview img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .result {
+      margin-top: 20px;
+      padding: 19px 20px;
+      display: grid;
+      gap: 16px;
+      border: 1px solid #17614f;
+      border-radius: 11px;
+      background: #0d2b27;
+    }
+    .result-summary { display: flex; align-items: center; gap: 18px; }
+    .result-image {
+      display: block;
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border: 1px solid #263750;
+      border-radius: 9px;
+      background: #050a12;
+    }
+    .score {
+      flex: 0 0 68px;
+      width: 68px;
+      height: 68px;
+      display: grid;
+      place-items: center;
+      border: 4px solid var(--mint);
+      border-radius: 50%;
+      color: var(--mint);
+      font: 700 .78rem ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+    .result-label { margin: 0 0 5px; color: var(--mint); font: .68rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
+    .result h2 { margin: 0; font-size: 1.1rem; text-transform: capitalize; }
+    .confidence { margin: 5px 0 0; color: #93aabe; font: .8rem ui-monospace, SFMono-Regular, Consolas, monospace; }
+    @media (max-width: 420px) {
+      body { padding: 16px 12px; }
+      .card { padding: 24px 20px; }
+      .preview { height: 210px; }
+      .result { gap: 13px; padding: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
 </head>
-
 <body>
+  <main class="card">
+    <p class="eyebrow">Rice variety recognition</p>
+    <h1>Rice Grain Classification</h1>
+    <p class="intro">Upload a clear photo of rice grains against a dark background. The classifier recognizes Arborio, Basmati, Ipsala, Jasmine, and Karacadag.</p>
 
-<div class="container">
+    <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data" id="upload-form">
+      <label class="dropzone" id="dropzone" for="image-input">
+        <span>
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 14.5v4A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="drop-title">Drop a rice image or click to browse</span>
+          <span class="drop-hint">PNG · JPG · JPEG · BMP · WEBP · UP TO 10 MB</span>
+          <span class="file-name" id="file-name" aria-live="polite"></span>
+        </span>
+        <input id="image-input" type="file" name="image" accept="image/png,image/jpeg,image/bmp,image/webp" required>
+      </label>
+      <button type="submit" id="submit-button">Classify rice variety</button>
+    </form>
 
-<h1>Rice Grain Classification</h1>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
 
-<form action="/predict" method="POST" enctype="multipart/form-data">
+    {% if not prediction %}
+      <div class="preview" id="preview-box">
+        <span id="preview-placeholder" style="color:#71849a;font-size:.85rem">Your rice image preview will appear here</span>
+        <img id="selected-preview" alt="Selected rice grain sample" hidden>
+      </div>
+    {% endif %}
 
-<input type="file" name="image" required>
+    {% if prediction %}
+      <section class="result" aria-live="polite">
+        <div class="result-summary">
+          <div class="score" aria-label="{{ confidence }} percent confidence">{{ confidence }}%</div>
+          <div>
+          <p class="result-label">Prediction</p>
+          <h2>{{ prediction }}</h2>
+          <p class="confidence">Confidence: {{ confidence }}%</p>
+          </div>
+        </div>
+        {% if image_data_url %}<img class="result-image" src="{{ image_data_url }}" alt="Uploaded rice grain sample used for this prediction">{% endif %}
+      </section>
+    {% endif %}
+  </main>
+  <script>
+    const input = document.getElementById('image-input');
+    const dropzone = document.getElementById('dropzone');
+    const fileName = document.getElementById('file-name');
+    const form = document.getElementById('upload-form');
+    const submitButton = document.getElementById('submit-button');
+    let previewUrl;
 
-<br>
+    function showSelectedImage(file) {
+      if (!file) return;
+      fileName.textContent = file.name;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      const selectedPreview = document.getElementById('selected-preview');
+      const placeholder = document.getElementById('preview-placeholder');
+      if (selectedPreview) {
+        selectedPreview.src = previewUrl;
+        selectedPreview.hidden = false;
+        if (placeholder) placeholder.hidden = true;
+      }
+    }
 
-<button type="submit">Predict</button>
-
-</form>
-
-{% if prediction %}
-
-<div class="result">
-
-<h2>Prediction</h2>
-
-<img src="{{image}}">
-
-<p><b>Rice Type :</b> {{prediction}}</p>
-
-<p><b>Confidence :</b> {{confidence}} %</p>
-
-</div>
-
-{% endif %}
-
-</div>
-
+    input.addEventListener('change', () => showSelectedImage(input.files[0]));
+    ['dragenter', 'dragover'].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+      event.preventDefault();
+      dropzone.classList.add('dragover');
+    }));
+    ['dragleave', 'drop'].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+      event.preventDefault();
+      dropzone.classList.remove('dragover');
+    }));
+    dropzone.addEventListener('drop', (event) => {
+      const [file] = event.dataTransfer.files;
+      if (!file) return;
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+      showSelectedImage(file);
+    });
+    form.addEventListener('submit', () => {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Classifying…';
+    });
+  </script>
 </body>
-
 </html>
